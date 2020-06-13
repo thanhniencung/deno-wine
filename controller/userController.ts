@@ -3,7 +3,8 @@ import { saveUser, selectUSerByPhone } from "../repository/userRepo.ts";
 import { Response } from "../helper/response.ts";
 import { encryptPass, verifyPass } from "../security/pass.ts";
 import { User } from "../model/user.ts";
-import {genToken} from "../security/jwt.ts";
+import { genToken } from "../security/jwt.ts";
+import { fetchPayload } from "../helper/token.ts";
 
 export const signInHandler = async (context: Context) => {
   const body = await context.request.body();
@@ -34,9 +35,9 @@ export const signInHandler = async (context: Context) => {
       displayName: user.displayName,
       avatar: user.avatar,
       token: genToken({
-        phone: user.phone
-      })
-    }
+        phone: user.phone,
+      }),
+    },
   });
 };
 
@@ -61,7 +62,6 @@ export const signUpHandler = async (context: Context) => {
     });
   }
 
-
   return Response(context, Status.OK, {
     status: Status.OK,
     message: STATUS_TEXT.get(Status.OK),
@@ -69,8 +69,29 @@ export const signUpHandler = async (context: Context) => {
       displayName: user.displayName,
       avatar: user.avatar,
       token: genToken({
-        phone: user.phone
-      })
-    }
+        phone: user.phone,
+      }),
+    },
+  });
+};
+
+export const profileHandler = async (context: Context) => {
+  const payload = await fetchPayload(context);
+
+  const user: User = await selectUSerByPhone(payload?.phone);
+  if (!user) {
+    return Response(context, Status.NotFound, {
+      status: Status.NotFound,
+      message: STATUS_TEXT.get(Status.NotFound),
+    });
+  }
+
+  return Response(context, Status.OK, {
+    status: Status.OK,
+    message: STATUS_TEXT.get(Status.OK),
+    data: {
+      displayName: user.displayName,
+      avatar: user.avatar,
+    },
   });
 };
