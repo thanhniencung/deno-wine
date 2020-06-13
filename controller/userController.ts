@@ -3,6 +3,7 @@ import { saveUser, selectUSerByPhone } from "../repository/userRepo.ts";
 import { Response } from "../helper/response.ts";
 import { encryptPass, verifyPass } from "../security/pass.ts";
 import { User } from "../model/user.ts";
+import {genToken} from "../security/jwt.ts";
 
 export const signInHandler = async (context: Context) => {
   const body = await context.request.body();
@@ -29,6 +30,13 @@ export const signInHandler = async (context: Context) => {
   return Response(context, Status.OK, {
     status: Status.OK,
     message: STATUS_TEXT.get(Status.OK),
+    data: {
+      displayName: user.displayName,
+      avatar: user.avatar,
+      token: genToken({
+        phone: user.phone
+      })
+    }
   });
 };
 
@@ -53,8 +61,16 @@ export const signUpHandler = async (context: Context) => {
     });
   }
 
+
   return Response(context, Status.OK, {
     status: Status.OK,
     message: STATUS_TEXT.get(Status.OK),
+    data: {
+      displayName: user.displayName,
+      avatar: user.avatar,
+      token: genToken({
+        phone: user.phone
+      })
+    }
   });
 };
