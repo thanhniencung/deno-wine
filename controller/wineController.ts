@@ -2,7 +2,7 @@ import { Context, Status, STATUS_TEXT } from "https://deno.land/x/oak/mod.ts";
 import { Response } from "../helper/response.ts";
 import {genToken} from "../security/jwt.ts";
 import {Wine} from "../model/wine.ts";
-import {saveWine} from "../repository/wineRepo.ts";
+import {saveWine, selectWineById} from "../repository/wineRepo.ts";
 
 export const wineListHandler = async (context: Context) => {
     const cates = [
@@ -67,4 +67,23 @@ export const addWineHandler = async (context: Context) => {
         status: Status.OK,
         message: STATUS_TEXT.get(Status.OK),
     });
+}
+
+export const wineDetailHandler = async (context: any) => {
+    const {id} = context.params as {id: string};
+    const wine: Wine = await selectWineById(id);
+
+    if (!wine) {
+        return Response(context, Status.NotFound, {
+            status: Status.NotFound,
+            message: STATUS_TEXT.get(Status.NotFound),
+        });
+    }
+
+    return Response(context, Status.OK, {
+        status: Status.OK,
+        message: STATUS_TEXT.get(Status.OK),
+        data: wine,
+    });
+
 }

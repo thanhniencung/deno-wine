@@ -6,3 +6,11 @@ const wineCollection = Db.collection("wines");
 export const saveWine = async (wine: Wine) => {
     return await wineCollection.insertOne(wine);
 }
+
+export const selectWineById = async (wineId: string) => {
+    return await wineCollection.findOne({
+        _id: {
+            "$oid": wineId
+        }
+    })
+}
