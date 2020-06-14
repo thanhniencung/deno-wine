@@ -5,7 +5,7 @@ import {
   profileHandler,
 } from "../controller/userController.ts";
 import { jwtMiddleware } from "../middleware/jwtMiddleware.ts";
-import {addWineHandler, wineDetailHandler, wineListHandler} from "../controller/wineController.ts";
+import {addWineHandler, wineCateHandler, wineDetailHandler, wineListHandler} from "../controller/wineController.ts";
 
 const router = new Router();
 router
@@ -14,6 +14,7 @@ router
   .get("/api/user/profile", jwtMiddleware, profileHandler)
   .get("/api/wine/list", wineListHandler)
   .get("/api/wine/detail/:id", wineDetailHandler)
+  .get("/api/wine/cate/:id", wineCateHandler)
   .post("/api/wine/add", jwtMiddleware, addWineHandler);
 
 export default router;
