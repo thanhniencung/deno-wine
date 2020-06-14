@@ -5,5 +5,6 @@ export interface Wine {
   alcohol: string;
   description: string;
   thumbnail: string;
+  price: number;
   cateID: string;
 }

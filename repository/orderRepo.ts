@@ -32,3 +32,11 @@ export const selectOrderByPhone = async (phone: any) => {
     status: OrderStatus.PENDING,
   });
 };
+
+export const updateOrderStatus = async (phone: any) => {
+  return await orderCollection.updateOne({
+    phone: phone,
+  }, {
+    status: OrderStatus.CONFIRM,
+  });
+};

@@ -1,4 +1,4 @@
-import { Status, STATUS_TEXT } from "https://deno.land/x/oak/mod.ts";
+import { Context, Status, STATUS_TEXT } from "https://deno.land/x/oak/mod.ts";
 import { fetchPayload } from "../helper/token.ts";
 import { selectWineById } from "../repository/wineRepo.ts";
 import { Response } from "../helper/response.ts";
@@ -8,6 +8,7 @@ import {
   checkWineExist,
   createOrder,
   selectOrderByPhone,
+  updateOrderStatus,
 } from "../repository/orderRepo.ts";
 import { OrderStatus } from "../model/orderStatus.ts";
 
@@ -51,5 +52,41 @@ export const addToCartHandler = async (context: any) => {
   return Response(context, Status.OK, {
     status: Status.OK,
     message: STATUS_TEXT.get(Status.OK),
+  });
+};
+
+export const checkoutHandler = async (context: Context) => {
+  const data = await fetchPayload(context);
+  const upsertedId = await updateOrderStatus(data?.phone);
+  if (!upsertedId) {
+    return Response(context, Status.ExpectationFailed, {
+      status: Status.ExpectationFailed,
+      message: STATUS_TEXT.get(Status.ExpectationFailed),
+    });
+  }
+
+  return Response(context, Status.OK, {
+    status: Status.OK,
+    message: STATUS_TEXT.get(Status.OK),
+  });
+};
+
+export const shoppingCartHandler = async (context: Context) => {
+  const data = await fetchPayload(context);
+  const order = await selectOrderByPhone(data?.phone);
+
+  if (!order) {
+    return Response(context, Status.NotFound, {
+      status: Status.NotFound,
+      message: STATUS_TEXT.get(Status.NotFound),
+    });
+  }
+
+  return Response(context, Status.OK, {
+    status: Status.OK,
+    message: STATUS_TEXT.get(Status.OK),
+    data: {
+      wines: order.wines,
+    },
   });
 };
